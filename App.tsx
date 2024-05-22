@@ -1,118 +1,102 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+import React, { useState } from 'react'
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const App = () => {
+  const [isCross,setIsCross]=useState(false)
+  const [grid, setGrid] = useState(new Array(9).fill("empty",0,9))
+  const [gameWinner, setGameWinner] = useState<string>("")
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const WinningLogic = () => {
+    if (
+      grid[0] === grid[1] &&
+      grid[0] === grid[2] &&
+      grid[0] !== 'empty'
+    ) {
+      setGameWinner(`${grid[0]} won the game! 🥳`);
+    } else if (
+      grid[3] !== 'empty' &&
+      grid[3] === grid[4] &&
+      grid[4] === grid[5]
+    ) {
+      setGameWinner(`${grid[3]} won the game! 🥳`);
+    } else if (
+      grid[6] !== 'empty' &&
+      grid[6] === grid[7] &&
+      grid[7] === grid[8]
+    ) {
+      setGameWinner(`${grid[6]} won the game! 🥳`);
+    } else if (
+      grid[0] !== 'empty' &&
+      grid[0] === grid[3] &&
+      grid[3] === grid[6]
+    ) {
+      setGameWinner(`${grid[0]} won the game! 🥳`);
+    } else if (
+      grid[1] !== 'empty' &&
+      grid[1] === grid[4] &&
+      grid[4] === grid[7]
+    ) {
+      setGameWinner(`${grid[1]} won the game! 🥳`);
+    } else if (
+      grid[2] !== 'empty' &&
+      grid[2] === grid[5] &&
+      grid[5] === grid[8]
+    ) {
+      setGameWinner(`${grid[2]} won the game! 🥳`);
+    } else if (
+      grid[0] !== 'empty' &&
+      grid[0] === grid[4] &&
+      grid[4] === grid[8]
+    ) {
+      setGameWinner(`${grid[0]} won the game! 🥳`);
+    } else if (
+      grid[2] !== 'empty' &&
+      grid[2] === grid[4] &&
+      grid[4] === grid[6]
+    ) {
+      setGameWinner(`${grid[2]} won the game! 🥳`);
+    } else if (!grid.includes('empty', 0)) {
+      setGameWinner('Draw game... ⌛️');
+    }
+      // if(grid[0] != "empty" && grid[1]==grid[2]){
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+      // }
+  }
+ 
+  const Selected=(position:number)=>{
+
+    if(grid[position]=="empty"){
+      grid[position] = isCross ? "X" : "O";
+      setIsCross(!isCross);
+    }
+
+    WinningLogic();
+
+  }
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <View>
+      
+      <FlatList
+      numColumns={3}
+      data={grid}
+      renderItem={({item,index})=>(
+        <Pressable key={index} onPress={()=>Selected(index)}>
+          <Text style={styles.gridItem}>{item}</Text>
+        </Pressable>
+      )}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+      {gameWinner?<Text>{gameWinner}</Text>:<Text>Hi</Text>}
+    </View>
+  )
 }
+
+export default App
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
+  gridItem:{
+    width:50,
+    height:50,
+    margin:20
+  }
+})
